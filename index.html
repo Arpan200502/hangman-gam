@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body {
+            font-family: monospace;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+        }
+        pre {
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        input {
+            font-size: 18px;
+            padding: 5px;
+            text-transform: lowercase;
+        }
+        button {
+            font-size: 18px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: #ff4500;
+            color: #fff;
+            border: none;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>HANGMAN GAME , MADE IN (PYTHON)</h1>
+    <pre id="hangman-stage"></pre>
+    <p>Word: <span id="word-display"></span></p>
+    <p>Lives: <span id="lives">6</span></p>
+    <input type="text" id="guess-input" maxlength="1">
+    <button onclick="makeGuess()">Guess</button>
+    <p id="message"></p>
+    
+    <script>
+        const wordList = ["python", "javascript", "hangman", "developer", "computer"];
+        const hangmanStages = [
+            `
+  +---+
+  |   |
+  O   |
+ /|\  |
+ / \  |
+      |
+=========`,
+            `
+  +---+
+  |   |
+  O   |
+ /|\  |
+ /    |
+      |
+=========`,
+            `
+  +---+
+  |   |
+  O   |
+ /|\  |
+      |
+      |
+=========`,
+            `
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========`,
+            `
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========`,
+            `
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========`,
+            `
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========`
+        ];
+
+        let chosenWord = wordList[Math.floor(Math.random() * wordList.length)];
+        let lives = 6;
+        let correctLetters = [];
+        let display = "_".repeat(chosenWord.length).split("");
+        
+        document.getElementById("word-display").textContent = display.join(" ");
+        document.getElementById("hangman-stage").textContent = hangmanStages[lives];
+        
+        function makeGuess() {
+            let guess = document.getElementById("guess-input").value.toLowerCase();
+            document.getElementById("guess-input").value = "";
+            document.getElementById("message").textContent = "";
+            
+            if (!guess.match(/[a-z]/) || guess.length !== 1) {
+                document.getElementById("message").textContent = "Enter a valid letter!";
+                return;
+            }
+            if (correctLetters.includes(guess) || display.includes(guess)) {
+                document.getElementById("message").textContent = "Already guessed that letter!";
+                return;
+            }
+            
+            let found = false;
+            for (let i = 0; i < chosenWord.length; i++) {
+                if (chosenWord[i] === guess) {
+                    display[i] = guess;
+                    found = true;
+                }
+            }
+            
+            if (found) {
+                correctLetters.push(guess);
+            } else {
+                lives--;
+                document.getElementById("lives").textContent = lives;
+            }
+            
+            document.getElementById("word-display").textContent = display.join(" ");
+            document.getElementById("hangman-stage").textContent = hangmanStages[lives];
+            
+            if (!display.includes("_")) {
+                document.getElementById("message").textContent = "You Win!";
+                document.querySelector("button").disabled = true;
+            }
+            if (lives === 0) {
+                document.getElementById("message").textContent = `Game Over! The word was "${chosenWord}"`;
+                document.querySelector("button").disabled = true;
+            }
+        }
+    </script>
+</body>
+</html>
